@@ -179,12 +179,12 @@ void VerificaIntensidadeVetor(int vetor[500],int tipo){
     }else if(tipo == 2){
         for(i = 0; i < 60; i++)
         {
-          LimiarDentinaMin = 30;
+          LimiarDentinaMin = 20;
           LimiarDentinaMax = 100;
           if(vetor[i] > LimiarDentinaMin && vetor[i] < LimiarDentinaMax) aux++;
         }
 
-        if(aux > 30){
+        if(aux > 45){
             bPreenche = true;
         }else{
             bPreenche = false;
@@ -201,6 +201,22 @@ void VerificaIntensidadeVetor(int vetor[500],int tipo){
 
 }
 
+void VerificaIntensidadeVetorOtimizado(int vetor[100]){
+    int temp, i , j;
+    int aux = 0;
+        for(i = 0; i < 60; i++)
+        {
+          if(vetor[i] == 255) aux++;
+          //cout << vetor[i] << endl;
+        }
+
+        if(aux > 27){
+            bPreenche = true;
+        }else{
+            bPreenche = false;
+        }
+}
+
 void OrdenaVetor(int window[])
 {
     int temp, i , j;
@@ -214,6 +230,22 @@ void OrdenaVetor(int window[])
         window[j+1] = temp;
     }
 }
+
+void OrdenaVetorNewMediana(int window[])
+{
+    int temp, i , j;
+    for(i = 0; i < 9; i++)
+    {
+        temp = window[i];
+        for(j = i-1; j >= 0 && temp < window[j]; j--)
+        {
+            window[j+1] = window[j];
+        }
+        window[j+1] = temp;
+    }
+}
+
+
 void MontaVetor(int Px, int Py, int Vetor[9])
 {
     int x,y;
@@ -227,6 +259,81 @@ void MontaVetor(int Px, int Py, int Vetor[9])
            i++;
         }
     }
+}
+
+void MontaVetorNewMediana(int Px, int Py, int Vetor[9])
+{
+    int x,y;
+    int i = 0;
+    for(y = Py - 1; y<= Py + 1; y++)
+    {
+        for(x = Px - 1; x <= Px + 1; x++)
+        {
+           //i = Image.GetPointIntensity(x,y);
+           Vetor[i] = NewImage.GetPointIntensity(x,y);
+           cout << Vetor[i] << endl;
+           i++;
+        }
+    }
+}
+
+void MontaVetorOtimizado(int Px, int Py, int Vetor[100])
+{
+    int x,y;
+    int i = 0;
+    for(y = Py - 4; y<= Py + 4; y++)
+    {
+        for(x = Px - 4; x <= Px + 4; x++)
+        {
+           //i = Image.GetPointIntensity(x,y);
+           Vetor[i] = NewImage.GetPointIntensity(x,y);
+           i++;
+        }
+    }
+}
+
+void VerificaIntensidadeVetorRuidoDeFora(int vetor[100]){
+    int temp, i , j;
+    int aux = 0;
+        for(i = 0; i < 20; i++)
+        {
+          if(vetor[i] == 0) aux++;
+          //cout << vetor[i] << endl;
+        }
+
+        if(aux > 10){
+            bPreenche = true;
+        }else{
+            bPreenche = false;
+        }
+}
+
+void MontaVetorRuidoDeFora(int Px, int Py, int Vetor[100])
+{
+    unsigned char r,g,b;
+    int x,y;
+    int i = 0;
+    int aux = 0;
+    for(y = Py - 3; y<= Py + 3; y++)
+    {
+        for(x = Px - 1; x <= Px + 1; x++)
+        {
+           //i = Image.GetPointIntensity(x,y);
+           //Vetor[i] = NewImage.GetPointIntensity(x,y);
+           NewImage.ReadPixel(x,y,r,g,b);
+           Vetor[i] = g;
+           if(Vetor[i] == 0) aux++;
+           //cout << Vetor[i] << endl;
+           i++;
+        }
+    }
+
+    //cout << aux << endl;
+    if(aux > 10){
+            bPreenche = true;
+        }else{
+            bPreenche = false;
+        }
 }
 
 void MontaVetorRuido(int Px,int Py,int Vetor[1000],int tipo)
@@ -245,9 +352,9 @@ void MontaVetorRuido(int Px,int Py,int Vetor[1000],int tipo)
             }
         }
     }else if(tipo == 2){
-        for(y = Py; y<= Py; y++)
+        for(y = Py - 4; y<= Py + 4; y++)
         {
-            for(x = Px - 15; x <= Px + 15; x++)
+            for(x = Px - 4; x <= Px + 4; x++)
             {
             //i = Image.GetPointIntensity(x,y);
             Vetor[i] = Image.GetPointIntensity(x,y);
@@ -277,6 +384,8 @@ void Mediana()
     double mediana;
     int Vetor[9];
     int x,y;
+    int cont = 0;
+    while (cont < 5){
 
     for(x=1; x<Image.SizeX()-1; x++)
     {
@@ -291,7 +400,9 @@ void Mediana()
         }
 
     }
-    NewImage.CopyTo(&Image);
+    //NewImage.CopyTo(&Image);
+    cont++;
+    }
     //cout << Image.SizeX() << "\n";
     //cout << Image.SizeY() << "\n";
 
@@ -299,6 +410,40 @@ void Mediana()
     cout << "Concluiu Mediana." << endl;
 
 }
+
+void NewMediana()
+{
+    cout << "Iniciou Mediana..." << endl;
+    double mediana;
+    int Vetor[9];
+    int x,y;
+    int cont = 0;
+    while (cont < 5){
+
+    for(x=1; x<NewImage.SizeX()-1; x++)
+    {
+        for(y=1; y<NewImage.SizeY()-1; y++)
+        {
+            MontaVetorNewMediana(x,y, Vetor); // Coloca em VETOR os valores das intensidades ao redor do ponto x,y.
+            OrdenaVetorNewMediana(Vetor);
+            mediana = Vetor[5];
+            NewImage.DrawPixel(x,y,mediana,mediana,mediana);
+            //NewImage[x][y] = mediana;
+            //Image[x][y] = (float)mediana;
+        }
+
+    }
+    //NewImage.CopyTo(&Image);
+    cont++;
+    }
+    //cout << Image.SizeX() << "\n";
+    //cout << Image.SizeY() << "\n";
+
+
+    cout << "Concluiu Mediana." << endl;
+
+}
+
 
 void PreencheRuidosPinos(){
     cout << "Iniciou PreencheRuidos..." << endl;
@@ -318,7 +463,6 @@ void PreencheRuidosPinos(){
                 bPreenche = true;
             }
         }
-
     }
     //NewImage.CopyTo(&Image);
     cout << "Concluiu PreencheRuidos." << endl;
@@ -329,10 +473,10 @@ void PreencheRuidosDentina(){
     cout << "Iniciou PreencheRuidosDentina..." << endl;
     int Vetor[500];
     int x,y;
-
-    for(x=1; x<Image.SizeX()-1; x++)
+    int cont = 0;
+    for(x=4; x<Image.SizeX()-4; x++)
     {
-        for(y=1; y<Image.SizeY()-1; y++)
+        for(y=4; y<Image.SizeY()-4; y++)
         {
             MontaVetorRuido(x,y, Vetor,2);
             VerificaIntensidadeVetor(Vetor,2);
@@ -345,17 +489,36 @@ void PreencheRuidosDentina(){
         }
 
     }
-    NewImage.CopyTo(&Image);
+    //NewImage.CopyTo(&Image);
     cout << "Concluiu PreencheRuidosDentina." << endl;
 
 }
 
-void SegmentacaoPorLimiar(){
+void TransfereCorParaImagem(){
     unsigned char r,g,b;
     int x,y;
     int i;
-    cout << "Iniciou Segmentacao por limiar....";
-    //ConvertBlackAndWhite(2);
+    for(x=0; x<Image.SizeX(); x++)
+    {
+        for(y=0; y<Image.SizeY(); y++)
+        {
+            //i = NewImage.GetPointIntensity(x,y); // VERIFICA O TOM DE CINZA DA IMAGEM
+            NewImage.ReadPixel(x,y,r,g,b);
+            if(r!= 0){
+                Image.DrawPixel(x,y,255,0,0);
+            }else if(g != 0){
+                Image.DrawPixel(x,y,0,255,0);
+            }else if(b != 0){
+                Image.DrawPixel(x,y,0,0,255);
+            }
+        }
+    }
+}
+
+void PreenchePinos(){
+    unsigned char r,g,b;
+    int x,y;
+    int i;
     PreencheRuidosPinos();
     //pinos
     for(x=0; x<NewImage.SizeX(); x++)
@@ -375,9 +538,15 @@ void SegmentacaoPorLimiar(){
 
         }
     }
+}
 
+void PreencheDentina(){
+    unsigned char r,g,b;
+    int x,y;
+    int i;
+    PreencheRuidosDentina();
     //dentinas
-    /*for(x=0; x<Image.SizeX(); x++)
+    for(x=0; x<Image.SizeX(); x++)
     {
         cout<< "\n";
         LimiarDentinaMin = 100;
@@ -395,7 +564,59 @@ void SegmentacaoPorLimiar(){
             }
 
         }
-    }*/
+    }
+}
+
+void OtimizaLocalDentina(){
+    int Vetor[100];
+    int x,y;
+    int cont = 0;
+    for(x=4; x<NewImage.SizeX()-4; x++)
+    {
+        for(y=4; y<NewImage.SizeY()-4; y++)
+        {
+            MontaVetorOtimizado(x,y,Vetor);
+            VerificaIntensidadeVetorOtimizado(Vetor);
+            //VerificaIntensidadeVetor(Vetor,2);
+            if(bPreenche){
+                NewImage.DrawPixel(x,y,0,255,0);
+            }else{
+                NewImage.DrawPixel(x,y,0,0,0);
+                bPreenche = true;
+            }
+        }
+
+    }
+}
+
+void RemoveRuidosDeFora(){
+    int Vetor[100];
+    int x,y;
+    int cont = 0;
+    for(x=1; x<NewImage.SizeX()-1; x++)
+    {
+        for(y=3; y<NewImage.SizeY()-3; y++)
+        {
+            MontaVetorRuidoDeFora(x,y,Vetor);
+            //VerificaIntensidadeVetorRuidoDeFora(Vetor);
+            if(bPreenche){
+                NewImage.DrawPixel(x,y,0,0,0);
+            }
+        }
+
+    }
+}
+
+void SegmentacaoPorLimiar(){
+    PreenchePinos();
+    //================================
+    //PreencheDentina();
+    //================================
+    //PreencheCanal();
+    //================================
+    TransfereCorParaImagem();
+
+
 
     /*for(x=0; x<NewImage.SizeX(); x++)
     {
@@ -413,9 +634,9 @@ void SegmentacaoPorLimiar(){
             }
 
         }
-    }*/
+    }
 
-    /*for(x=0; x<Image.SizeX(); x++)
+    for(x=0; x<Image.SizeX(); x++)
     {
         cout<< "\n";
         for(y=0; y<Image.SizeY(); y++)
@@ -444,7 +665,7 @@ void SegmentacaoPorLimiar(){
         }
     }*/
     //NewImage.CopyTo()
-    cout << "Concluiu Black & White." << endl;
+    //TransfereCorParaImagem();
 
 }
 
@@ -452,7 +673,6 @@ void SegmentacaoPorLimiar(){
 void SegmentacaoPorRegioes(){
 
 }
-
 
 
 // **********************************************************************
@@ -580,9 +800,17 @@ void keyboard ( unsigned char key, int x, int y )
         SegmentacaoPorRegioes();
         glutPostRedisplay();    // obrigatório para redesenhar a tela
         break;
+     case 'n':
+         //NewMediana();
+
+        break;
      case 'p':
         //PreencheRuidosPinos();
         PreencheRuidosDentina();
+        OtimizaLocalDentina();
+        RemoveRuidosDeFora();
+
+
         //PreencheRuidosCanal();
         glutPostRedisplay();    // obrigatório para redesenhar a tela
         break;
