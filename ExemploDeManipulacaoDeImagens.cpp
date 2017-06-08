@@ -231,6 +231,20 @@ void OrdenaVetor(int window[])
     }
 }
 
+void OrdenaVetorAux(int window[])
+{
+    int temp, i , j;
+    for(i = 0; i < 15; i++)
+    {
+        temp = window[i];
+        for(j = i-1; j >= 0 && temp < window[j]; j--)
+        {
+            window[j+1] = window[j];
+        }
+        window[j+1] = temp;
+    }
+}
+
 void OrdenaVetorNewMediana(int window[])
 {
     int temp, i , j;
@@ -259,6 +273,52 @@ void MontaVetor(int Px, int Py, int Vetor[9])
            i++;
         }
     }
+}
+
+int CalculaMedia(int Vetor[]){
+    int i;
+    int soma = 0;
+    int totalItens = 0;
+    int media = 0;
+    int currValue = 0;
+    for(i = 0; i< 25; i++)
+    {
+        currValue = Vetor[i];
+        soma = soma + currValue;
+        totalItens++;
+    }
+    media = soma/totalItens;
+    //cout << media << endl;
+    return media;
+}
+
+void PreencheJanela(int Px, int Py, int Vetor[25])
+{
+    int x,y;
+    int i = 0;
+    int mediana;
+    for(y = Py - 2; y<= Py + 2; y++)
+    {
+        for(x = Px - 2; x <= Px + 2; x++)
+        {
+           //i = Image.GetPointIntensity(x,y);
+           Vetor[i] = Image.GetPointIntensity(x,y);
+           //cout << Vetor[i] << endl;
+           i++;
+        }
+    }
+
+    //OrdenaVetorAux(Vetor);
+    //mediana = Vetor[11];
+    mediana = CalculaMedia(Vetor);
+    for(y = Py - 2; y<= Py + 2; y++)
+    {
+        for(x = Px - 2; x <= Px + 2; x++)
+        {
+           NewImage.DrawPixel(x,y,mediana,mediana,mediana);
+        }
+    }
+
 }
 
 void MontaVetorNewMediana(int Px, int Py, int Vetor[9])
@@ -608,7 +668,7 @@ void RemoveRuidosDeFora(){
 }
 
 void SegmentacaoPorLimiar(){
-    PreenchePinos();
+    //PreenchePinos();
     //================================
     //PreencheDentina();
     //================================
@@ -672,6 +732,23 @@ void SegmentacaoPorLimiar(){
 
 void SegmentacaoPorRegioes(){
 
+}
+
+void TesteFiltro(){
+    int x,y;
+    double mediana;
+    int Vetor[25];
+    for(x=2; x<Image.SizeX()-2; x++)
+    {
+        for(y=2; y<Image.SizeY()-2; y++)
+        {
+            PreencheJanela(x,y, Vetor); // Coloca em VETOR os valores das intensidades ao redor do ponto x,y.
+
+            //NewImage[x][y] = mediana;
+            //Image[x][y] = (float)mediana;
+        }
+
+    }
 }
 
 
@@ -812,6 +889,10 @@ void keyboard ( unsigned char key, int x, int y )
 
 
         //PreencheRuidosCanal();
+        glutPostRedisplay();    // obrigatório para redesenhar a tela
+        break;
+     case 't':
+        TesteFiltro();
         glutPostRedisplay();    // obrigatório para redesenhar a tela
         break;
 
