@@ -209,8 +209,8 @@ void VerificaIntensidadeVetorOtimizado(int vetor[200]){
           if(vetor[i] == 255) aux++;
           //cout << vetor[i] << endl;
         }
-
-        if(aux > 62){
+        //cout << vetor[i] << endl;
+        if(aux > 60){
             bPreenche = true;
         }else{
             bPreenche = false;
@@ -232,16 +232,15 @@ void VerificaIntensidadeVetorOtimizadoV2(int vetor[200]){
         }
 }
 
-void VerificaIntensidadeVetorLinhaOtimizado(int vetor[200]){
+void VerificaIntensidadeVetorLinhaOtimizado(int vetor[81]){
     int temp, i , j;
     int aux = 0;
-        for(i = 0; i < 10; i++)
+        for(i = 0; i < 81; i++)
         {
           if(vetor[i] == 255) aux++;
-          //cout << vetor[i] << endl;
         }
-        //cout << aux << endl;
-        if(aux > 5){
+        //cout << endl;
+        if(aux > 40){
             bPreenche = true;
         }else{
             bPreenche = false;
@@ -399,19 +398,22 @@ void MontaVetorOtimizadoV2(int Px, int Py, int Vetor[200])
     }
 }
 
-void MontaVetorLinhaOtimizado(int Px, int Py, int Vetor[200])
+void MontaVetorLinhaOtimizado(int Px, int Py, int Vetor[81])
 {
     int x,y;
     int i = 0;
-    for(y = Py - 1; y<= Py + 1; y++)
+    for(y = Py; y<= Py; y++)
     {
-        for(x = Px - 3; x <= Px + 3; x++)
+        for(x = Px - 40; x <= Px + 40; x++)
         {
            //i = Image.GetPointIntensity(x,y);
            Vetor[i] = NewImage.GetPointIntensity(x,y);
            i++;
+           //cout << Vetor[i] << " - ";
         }
+        //cout << endl;
     }
+
 }
 
 void VerificaIntensidadeVetorRuidoDeFora(int vetor[100]){
@@ -737,18 +739,19 @@ void OtimizaLocalDentinaV2(){
 }
 
 void OtimizaLinhaDentina(){
-    int Vetor[200];
+    int Vetor[81];
     int x,y;
     int cont = 0;
-    for(x=3; x<NewImage.SizeX()-3; x++)
+    for(x=40; x<NewImage.SizeX()-40; x++)
     {
-        for(y=1; y<NewImage.SizeY()-1; y++)
+        for(y=0; y<NewImage.SizeY(); y++)
         {
             MontaVetorLinhaOtimizado(x,y,Vetor);
             VerificaIntensidadeVetorLinhaOtimizado(Vetor);
             //VerificaIntensidadeVetor(Vetor,2);
             if(bPreenche){
-                NewImage.DrawPixel(x,y,255,255,255);
+                //NewImage.DrawPixel(x,y,255,255,255);
+                NewImage.DrawPixel(x,y,255,0,0);
             }else{
                 NewImage.DrawPixel(x,y,0,0,0);
                 bPreenche = true;
@@ -995,8 +998,8 @@ void keyboard ( unsigned char key, int x, int y )
         //TransfereCorParaImagem();
         PreencheRuidosDentina();
         OtimizaLocalDentina();
-        //OtimizaLocalDentinaV2();
         OtimizaLinhaDentina();
+        //OtimizaLocalDentinaV2();
         //RemoveRuidosDeFora();
         //TransfereCorParaImagem();
 
