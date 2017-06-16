@@ -247,6 +247,21 @@ void VerificaIntensidadeVetorLinhaOtimizado(int vetor[81]){
         }
 }
 
+void VerificaIntensidadeVetorVerticalOtimizado(int vetor[1000]){
+    int temp, i , j;
+    int aux = 0;
+        for(i = 0; i < 201; i++)
+        {
+          if(vetor[i] == 255) aux++;
+        }
+        //cout << endl;
+        if(aux > 50){
+            bPreenche = true;
+        }else{
+            bPreenche = false;
+        }
+}
+
 void OrdenaVetor(int window[])
 {
     int temp, i , j;
@@ -413,6 +428,26 @@ void MontaVetorLinhaOtimizado(int Px, int Py, int Vetor[81])
         }
         //cout << endl;
     }
+
+}
+
+
+void MontaVetorVerticalOtimizado(int Px, int Py, int Vetor[1000])
+{
+    int x,y;
+    int i = 0;
+    unsigned char r,g,b;
+    for(x = Px - 0; x <= Px +0; x++)
+    {
+        for(y = Py - 100; y<= Py + 100; y++)
+        {
+           NewImage.ReadPixel(x,y,r,g,b);
+           Vetor[i] = r;
+           //cout << Vetor[i] << "-";
+           i++;
+        }
+    }
+    //cout << i << endl;
 
 }
 
@@ -761,6 +796,27 @@ void OtimizaLinhaDentina(){
     }
 }
 
+void OtimizaVerticalDentina(){
+    int Vetor[1000];
+    int x,y;
+    for(x=0; x<NewImage.SizeX(); x++)
+    {
+        for(y=100; y<NewImage.SizeY()-100; y++)
+        {
+            MontaVetorVerticalOtimizado(x,y,Vetor);
+            VerificaIntensidadeVetorVerticalOtimizado(Vetor);
+            if(bPreenche){
+                NewImage.DrawPixel(x,y,0,255,255);
+            }else{
+                NewImage.DrawPixel(x,y,0,0,0);
+                bPreenche = true;
+            }
+        }
+
+    }
+    x = 0;
+}
+
 void RemoveRuidosDeFora(){
     int Vetor[100];
     int x,y;
@@ -999,8 +1055,8 @@ void keyboard ( unsigned char key, int x, int y )
         PreencheRuidosDentina();
         OtimizaLocalDentina();
         OtimizaLinhaDentina();
-        //OtimizaLocalDentinaV2();
-        //RemoveRuidosDeFora();
+        OtimizaVerticalDentina();
+
         //TransfereCorParaImagem();
 
 
