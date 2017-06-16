@@ -247,15 +247,30 @@ void VerificaIntensidadeVetorLinhaOtimizado(int vetor[81]){
         }
 }
 
-void VerificaIntensidadeVetorVerticalOtimizado(int vetor[1000]){
+void VerificaIntensidadeVetorLinhaFiltro(int vetor[1000]){
     int temp, i , j;
     int aux = 0;
-        for(i = 0; i < 201; i++)
+        for(i = 0; i < 861; i++)
         {
           if(vetor[i] == 255) aux++;
         }
         //cout << endl;
-        if(aux > 50){
+        if(aux > 300){
+            bPreenche = true;
+        }else{
+            bPreenche = false;
+        }
+}
+
+void VerificaIntensidadeVetorVerticalOtimizado(int vetor[1000]){
+    int temp, i , j;
+    int aux = 0;
+        for(i = 0; i < 51; i++)
+        {
+          if(vetor[i] == 255) aux++;
+        }
+        //cout << endl;
+        if(aux > 8){
             bPreenche = true;
         }else{
             bPreenche = false;
@@ -431,6 +446,26 @@ void MontaVetorLinhaOtimizado(int Px, int Py, int Vetor[81])
 
 }
 
+void MontaVetorLinhaFiltro(int Px, int Py, int Vetor[1000])
+{
+    int x,y;
+    int i = 0;
+    unsigned char r,g,b;
+    for(x = Px - 10; x <= Px + 10; x++)
+    {
+        for(y = Py - 20; y<= Py + 20; y++)
+        {
+
+           NewImage.ReadPixel(x,y,r,g,b);
+           Vetor[i] = b;
+           //cout << Vetor[i] << "-";
+           i++;
+        }
+    }
+    //cout << i << endl;
+
+}
+
 
 void MontaVetorVerticalOtimizado(int Px, int Py, int Vetor[1000])
 {
@@ -439,7 +474,7 @@ void MontaVetorVerticalOtimizado(int Px, int Py, int Vetor[1000])
     unsigned char r,g,b;
     for(x = Px - 0; x <= Px +0; x++)
     {
-        for(y = Py - 100; y<= Py + 100; y++)
+        for(y = Py - 25; y<= Py + 25; y++)
         {
            NewImage.ReadPixel(x,y,r,g,b);
            Vetor[i] = r;
@@ -796,17 +831,39 @@ void OtimizaLinhaDentina(){
     }
 }
 
+void OtimizaLinhaFiltro(){
+    int Vetor[1000];
+    int x,y;
+    int cont = 0;
+    for(x=10; x<NewImage.SizeX()-10; x++)
+    {
+        for(y=20; y<NewImage.SizeY()-20; y++)
+        {
+            MontaVetorLinhaFiltro(x,y,Vetor);
+            VerificaIntensidadeVetorLinhaFiltro(Vetor);
+            if(bPreenche){
+                //NewImage.DrawPixel(x,y,255,255,255);
+                NewImage.DrawPixel(x,y,0,255,0);
+            }else{
+                NewImage.DrawPixel(x,y,0,0,0);
+                bPreenche = true;
+            }
+        }
+
+    }
+}
+
 void OtimizaVerticalDentina(){
     int Vetor[1000];
     int x,y;
     for(x=0; x<NewImage.SizeX(); x++)
     {
-        for(y=100; y<NewImage.SizeY()-100; y++)
+        for(y=25; y<NewImage.SizeY()-25; y++)
         {
             MontaVetorVerticalOtimizado(x,y,Vetor);
             VerificaIntensidadeVetorVerticalOtimizado(Vetor);
             if(bPreenche){
-                NewImage.DrawPixel(x,y,0,255,255);
+                NewImage.DrawPixel(x,y,0,0,255);
             }else{
                 NewImage.DrawPixel(x,y,0,0,0);
                 bPreenche = true;
@@ -853,17 +910,14 @@ void SegmentacaoPorLimiar(){
         {
             i = NewImage.GetPointIntensity(x,y); // VERIFICA O TOM DE CINZA DA IMAGEM
             NewImage.ReadPixel(x,y,r,g,b);
-
             if(i > LIMIAR){
                 NewImage.DrawPixel(x, y,0,0,255);
             }
             else{
                 NewImage.DrawPixel(x, y, 0,0,0); // exibe um ponto VERMELHO na imagem
             }
-
         }
     }
-
     for(x=0; x<Image.SizeX(); x++)
     {
         cout<< "\n";
@@ -871,11 +925,8 @@ void SegmentacaoPorLimiar(){
         {
             i = Image.GetPointIntensity(x,y); // VERIFICA O TOM DE CINZA DA IMAGEM
             Image.ReadPixel(x,y,r,g,b);
-
             LimiarDentinaMin = 60;
             LimiarDentinaMax = 130;
-
-
             if(i < LimiarDentinaMax && i > LimiarDentinaMin){
                 NewImage.DrawPixel(x, y,0,255,0);
             }
@@ -889,7 +940,6 @@ void SegmentacaoPorLimiar(){
             else{
                 NewImage.DrawPixel(x, y, 255,255,255); // exibe um ponto VERMELHO na imagem
             }
-
         }
     }*/
     //NewImage.CopyTo()
@@ -1056,7 +1106,7 @@ void keyboard ( unsigned char key, int x, int y )
         OtimizaLocalDentina();
         OtimizaLinhaDentina();
         OtimizaVerticalDentina();
-
+        OtimizaLinhaFiltro();
         //TransfereCorParaImagem();
 
 
@@ -1117,6 +1167,3 @@ int main ( int argc, char** argv )
     glutMainLoop ( );
     return 0;
 }
-
-
-
