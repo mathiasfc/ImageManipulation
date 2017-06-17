@@ -32,6 +32,7 @@ using namespace std;
 ImageClass Image, NewImage, ImageAux;
 
 bool bPreenche = false;
+bool bPintaPreto = false;
 
 int LIMIAR = 120;
 
@@ -255,10 +256,25 @@ void VerificaIntensidadeVetorLinhaFiltro(int vetor[1000]){
           if(vetor[i] == 255) aux++;
         }
         //cout << endl;
-        if(aux > 300){
+        if(aux > 225){
             bPreenche = true;
         }else{
             bPreenche = false;
+        }
+}
+
+void VerificaIntensidadeVetorUltimosRuidos(int vetor[1000]){
+    int temp, i , j;
+    int aux = 0;
+        for(i = 0; i < 441; i++)
+        {
+          if(vetor[i] == 0) aux++;
+        }
+        //cout << aux << endl;
+        if(aux > 200){
+            bPintaPreto = true;
+        }else{
+            bPintaPreto = false;
         }
 }
 
@@ -465,6 +481,28 @@ void MontaVetorLinhaFiltro(int Px, int Py, int Vetor[1000])
     //cout << i << endl;
 
 }
+
+void MontaVetorUltimosRuidos(int Px, int Py, int Vetor[1000])
+{
+    int x,y;
+    int i = 0;
+    unsigned char r,g,b;
+    for(x = Px - 10; x <= Px + 10; x++)
+    {
+        for(y = Py - 10; y<= Py + 10; y++)
+        {
+
+           NewImage.ReadPixel(x,y,r,g,b);
+           Vetor[i] = r;
+           //cout << Vetor[i] << "-";
+           i++;
+        }
+    }
+    //cout << i << endl;
+
+}
+
+
 
 
 void MontaVetorVerticalOtimizado(int Px, int Py, int Vetor[1000])
@@ -831,7 +869,7 @@ void OtimizaLinhaDentina(){
     }
 }
 
-void OtimizaLinhaFiltro(){
+void OtimizaLocalMaiorFiltro(){
     int Vetor[1000];
     int x,y;
     int cont = 0;
@@ -843,7 +881,7 @@ void OtimizaLinhaFiltro(){
             VerificaIntensidadeVetorLinhaFiltro(Vetor);
             if(bPreenche){
                 //NewImage.DrawPixel(x,y,255,255,255);
-                NewImage.DrawPixel(x,y,0,255,0);
+                NewImage.DrawPixel(x,y,255,0,0);
             }else{
                 NewImage.DrawPixel(x,y,0,0,0);
                 bPreenche = true;
@@ -851,6 +889,35 @@ void OtimizaLinhaFiltro(){
         }
 
     }
+}
+
+void RemoveUltimosRuidos(){
+    int Vetor[1000];
+    int x,y;
+    int cont = 0;
+    unsigned char r,g,b;
+    for(x=0; x<NewImage.SizeX()-1; x++)
+    {
+        for(y=0; y<NewImage.SizeY()-1; y++)
+        {
+            NewImage.ReadPixel(x,y,r,g,b);
+            if(r == 255){
+                    cout << "Encontrou vermelho: "<< r << endl;
+                do{
+                   NewImage.ReadPixel(x+1,y,r,g,b);
+                   cont = cont + 1;
+                }while(r == 255);
+                cout << "SAIU AMEM SENHOR"<< r << endl;
+                /*MontaVetorUltimosRuidos(x,y,Vetor);
+                VerificaIntensidadeVetorUltimosRuidos(Vetor);
+                if(bPintaPreto){
+                    NewImage.DrawPixel(x,y,255,255,255);
+                }*/
+            }
+        }
+
+    }
+    cout << cont << endl;
 }
 
 void OtimizaVerticalDentina(){
@@ -1106,7 +1173,8 @@ void keyboard ( unsigned char key, int x, int y )
         OtimizaLocalDentina();
         OtimizaLinhaDentina();
         OtimizaVerticalDentina();
-        OtimizaLinhaFiltro();
+        OtimizaLocalMaiorFiltro();
+        RemoveUltimosRuidos();
         //TransfereCorParaImagem();
 
 
