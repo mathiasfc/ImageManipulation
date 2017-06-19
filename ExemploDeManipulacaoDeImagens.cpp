@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <string.h>
 
 using namespace std;
 
@@ -891,6 +892,56 @@ void OtimizaLocalMaiorFiltro(){
     }
 }
 
+void PreencheCanais(){
+    int posX[2000];
+    int x,y, i;
+    unsigned char r,g,b,rAux,gAux,bAux;
+    int cont;
+    int largura = NewImage.SizeX();
+    int altura = NewImage.SizeY();
+    for(y=NewImage.SizeY()-10; y>10; y--)
+    {
+        for(x=10; x<NewImage.SizeX()-10; x++)
+        {
+            cont = 1;
+            rAux = 0;
+            gAux = 0;
+            bAux = 0;
+            NewImage.ReadPixel(x,y,r,g,b);
+            //Verifica se o pixel é vermelho
+            if(r == 255){
+                NewImage.ReadPixel(x+1,y,r,g,b);
+                //Verifica se o prox pixel é preto
+                if(r == 0){
+                    //NewImage.ReadPixel(x+1,y-1,rAux,gAux,bAux);
+                    //if(rAux == 255 || gAux == 255){
+                        //NewImage.DrawPixel(x+1,y-1,255,255,255);
+                        while(r == 0 && x+cont < NewImage.SizeX()){
+                            NewImage.ReadPixel(x+cont,y,r,g,b);
+                            cont = cont + 1;
+                            posX[cont-1] = x+cont;
+                            //cout << cont << endl;
+
+                        }
+                        //cout << "Consegui sair do while SENHOR: "<<cont << endl;
+                        if(cont < 140){
+                            for(i = 0;i<cont;i++){
+                                NewImage.DrawPixel(posX[i],y,0,255,0);
+                        }
+                        }else{
+                            //cout << "Acho que limpou o array" << endl;
+                            //Limpa array
+                            memset(posX, 0, sizeof(posX));
+                        }
+                    //}
+                }//ESSEAKI
+            }
+
+            //x += cont;
+        }
+    }
+}
+
 void RemoveUltimosRuidos(){
     int Vetor[1000];
     int x,y;
@@ -1174,7 +1225,9 @@ void keyboard ( unsigned char key, int x, int y )
         OtimizaLinhaDentina();
         OtimizaVerticalDentina();
         OtimizaLocalMaiorFiltro();
-        RemoveUltimosRuidos();
+        //RemoveUltimosRuidos();
+        PreencheCanais();
+
         //TransfereCorParaImagem();
 
 
