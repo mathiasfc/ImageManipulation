@@ -918,8 +918,8 @@ void PreencheCanais(){
                         //NewImage.DrawPixel(x+1,y-1,255,255,255);
                         while(r == 0 && x+cont < NewImage.SizeX()){
                             NewImage.ReadPixel(x+cont,y,r,g,b);
-                            cont = cont + 1;
                             posX[cont-1] = x+cont;
+                            cont = cont + 1;
                             //cout << cont << endl;
 
                         }
@@ -941,6 +941,43 @@ void PreencheCanais(){
         }
     }
 }
+
+void AjustaCanais(){
+    int x,y;
+    unsigned char r,g,b,rAux,gAux,bAux;
+    int largura = NewImage.SizeX();
+    int altura = NewImage.SizeY();
+    for(y=NewImage.SizeY()-10; y>10; y--)
+    {
+        for(x=10; x<NewImage.SizeX()-10; x++)
+        {
+            NewImage.ReadPixel(x,y,r,g,b);
+            if(g == 255){
+                NewImage.ReadPixel(x,y+1,r,g,b);
+                //NewImage.ReadPixel(x,y-1,rAux,gAux,bAux);
+                if(r == 0 && g == 0 && b == 0){
+                    NewImage.DrawPixel(x,y,0,0,0);
+                }
+            }
+        }
+    }
+    for(y=10; y<NewImage.SizeY()-10; y++)
+    {
+        for(x=10; x<NewImage.SizeX()-10; x++)
+        {
+            NewImage.ReadPixel(x,y,rAux,gAux,bAux);
+            if(gAux == 255){
+                NewImage.ReadPixel(x,y-1,rAux,gAux,bAux);
+                //NewImage.ReadPixel(x,y-1,rAux,gAux,bAux);
+                if(rAux == 0 && gAux == 0 && bAux == 0){
+                    NewImage.DrawPixel(x,y,0,0,0);
+                }
+            }
+        }
+    }
+}
+
+
 
 void RemoveUltimosRuidos(){
     int Vetor[1000];
@@ -1087,7 +1124,6 @@ void TesteFiltro(){
     }
 }
 
-
 // **********************************************************************
 //  void init(void)
 // **********************************************************************
@@ -1220,14 +1256,15 @@ void keyboard ( unsigned char key, int x, int y )
      case 'p':
         //PreencheRuidosPinos();
         //TransfereCorParaImagem();
+
         PreencheRuidosDentina();
         OtimizaLocalDentina();
         OtimizaLinhaDentina();
         OtimizaVerticalDentina();
         OtimizaLocalMaiorFiltro();
-        //RemoveUltimosRuidos();
+        ////////////RemoveUltimosRuidos();
         PreencheCanais();
-
+        AjustaCanais();
         //TransfereCorParaImagem();
 
 
